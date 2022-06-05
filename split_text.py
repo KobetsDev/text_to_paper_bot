@@ -540,10 +540,6 @@ def apply1(s):
                         return ([s[0], s[1]+s[2], s[3], s[4]], 5, 2)
 
 
-# if __name__ == "__main__":
-    # sx = split(u"спросил")
-    # print(u"|".join(sx))
-
 def split_word(word):
     """
     Split single word to syllables
@@ -568,4 +564,4 @@ def split_words(words):
     return tokens
 
 
-# print(split_word('Перпендикулярный'))
+# print(split_words(['Перпендикулярный', 'Любительский']))

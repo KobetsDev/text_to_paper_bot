@@ -6,7 +6,7 @@ import time
 from PIL import Image, ImageDraw, ImageFont
 
 from art_to_page import Drawing
-from defis_text import split_a_text
+from defis_text import SplitText
 
 import os
 
@@ -104,7 +104,7 @@ class CreatePhoto(OpenImage, Fonts):
         OpenImage.__init__(self, path_save_image_folder, page_type, path_global_image_folder)
         Fonts.__init__(self, path_fonts_folder, font_name, size)
 
-    def config(self, page_type, font_use):
+    def _config(self, page_type, font_use):
         if page_type == 'cell':
             offset = 34  # 39
             if font_use == 'Merkucio':
@@ -123,25 +123,34 @@ class CreatePhoto(OpenImage, Fonts):
                 list_size = 1625
         return offset, list_size
 
+    def _get_split_text(self, font_use):
+        """Разбиваем текст на строки"""
+        text_split = []
+        for i in self.text.split('\n\n'):
+            ST = SplitText(text=i, width_all=self.list_size,
+                           font_use=font_use,
+                           spaser_word=self.spaser_word)
+            text_split.append(ST.split())
+        return text_split
+
     def create(self):
         # Подгружаем шрифт
         font_use = self.font()
         # Подгружаем картинку
         page = self.open_image(self.REFLECTED_PAGE)
         # print(self.page_type, font_use)
-        offset, self.list_size = self.config(self.page_type, font_use)
+        offset, self.list_size = self._config(self.page_type, font_use)
         # номер сохранения страницы
         str_number = 0
-        text_split = []
         paths = []
         line_number = 0
         # разбиваем на абзатцы
-        for i in self.text.split('\n\n'):
-            text_split.append(
-                split_a_text(text=i, width_all=self.list_size,
-                             font_use=font_use,
-                             spaser_word=self.spaser_word)
-            )
+        text_split = self._get_split_text(font_use)
+        # text_split.append(
+        #     split_a_text(text=i, width_all=self.list_size,
+        #                  font_use=font_use,
+        #                  spaser_word=self.spaser_word)
+        # )
         if self.page_type == 'cell':
             global_line_start = 300 if self.REFLECTED_PAGE else 75
         elif self.page_type == 'line':
@@ -212,11 +221,13 @@ class CreatePhoto(OpenImage, Fonts):
 # Как уже неоднократно упомянуто, акционеры крупнейших компаний, вне зависимости от их уровня, должны быть подвергнуты целой серии независимых исследований. Не следует, однако, забывать, что разбавленное изрядной долей эмпатии, рациональное мышление в значительной степени обусловливает важность как самодостаточных, так и внешне зависимых концептуальных решений. Каждый из нас понимает очевидную вещь: разбавленное изрядной долей эмпатии, рациональное мышление требует определения и уточнения модели развития. Значимость этих проблем настолько очевидна, что начало повседневной работы по формированию позиции не оставляет шанса для направлений прогрессивного развития! Прежде всего, высококачественный прототип будущего проекта говорит о возможностях дальнейших направлений развития.
 # Задача организации, в особенности же дальнейшее развитие различных форм деятельности играет определяющее значение для дальнейших направлений развития. Принимая во внимание показатели успешности, сложившаяся структура организации говорит о возможностях благоприятных перспектив.
 # """
+# absFilePath = os.path.abspath(__file__)
+# BASE_DIR = os.path.dirname(absFilePath)
 # CP = CreatePhoto(
-#     path_save_image_folder='D:\\w\\text_to_list\\bot_v.2.0\\IMG\\',
-#     path_global_image_folder='D:\\w\\text_to_list\\bot_v.2.0\\PAGES\\',
+#     path_save_image_folder=os.path.join(BASE_DIR, 'IMG'),
+#     path_global_image_folder=os.path.join(BASE_DIR, 'PAGES'),
 
-#     path_fonts_folder='D:\w\\text_to_list\\bot_v.2.0\\Fonts\\',
+#     path_fonts_folder=os.path.join(BASE_DIR, 'Fonts'),
 #     size=85,
 
 #     text=text,

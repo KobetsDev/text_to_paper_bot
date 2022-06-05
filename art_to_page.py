@@ -19,24 +19,29 @@ class Drawing(object):
         self.font_name = font_name
         self.font_color = font_color
 
-    def __drawing_line(self):
+    def _drawing_word(self, number, slovo):
+        """Рисуем слово"""
+        img_slovo = Image.new('RGBA', (self.width+number, self.height),
+                              (255, random.randint(0, 150),
+                               random.randint(0, 200), self.color_word))
+        draw = ImageDraw.Draw(img_slovo)
+        draw.text((number, 0), slovo, fill=(
+            int(self.font_color[0]),
+            int(self.font_color[1]),
+            int(self.font_color[2])
+        ), font=self.font_use)
+        return img_slovo
+
+    def _drawing_line(self):
         """Рисуем слова на строке"""
         for slovo in self.stroka.split():
-            width1, height1 = self.font_use.getsize(slovo)
-            cl1 = 200 if self.COLOR_USE else 0
+            self.width, self.height = self.font_use.getsize(slovo)
+            self.color_word = 200 if self.COLOR_USE else 0
             # Пишем на этой картинке шрифтом
             if self.font_name == 'Salavat':
-                img_slovo = Image.new(
-                    'RGBA', (width1+15, height1), (255, random.randint(0, 150), random.randint(0, 200), cl1))
-                draw2 = ImageDraw.Draw(img_slovo)
-                draw2.text((15, 0), slovo, fill=(int(self.font_color[0]), int(
-                    self.font_color[1]), int(self.font_color[2])), font=self.font_use)
+                img_slovo = self._drawing_word(15, slovo)
             else:
-                img_slovo = Image.new(
-                    'RGBA', (width1+10, height1), (255, random.randint(0, 150), random.randint(0, 200), cl1))
-                draw2 = ImageDraw.Draw(img_slovo)
-                draw2.text((10, 0), slovo, fill=(int(self.font_color[0]), int(
-                    self.font_color[1]), int(self.font_color[2])), font=self.font_use)
+                img_slovo = self._drawing_word(10, slovo)
             # поварачиваем текст
             ran_rotate = random.uniform(-2.0, 1.5)
             img_slovo = img_slovo.rotate(ran_rotate, expand=True)
@@ -45,26 +50,24 @@ class Drawing(object):
             self.mass_img.append(img_slovo)
         return self.mass_img
 
-    def __paste_on_paper(self):
+    def _paste_on_paper(self):
         """Рисуем строки на листке"""
-        cl = 155 if self.COLOR_USE else 0
+        self.color_line = 155 if self.COLOR_USE else 0
         # Создаём картинку всей строки
-        stroka_img = Image.new('RGBA', (self.list_size, 135), (255, 255, 255, cl))
-        len_width = 0
+        stroka_img = Image.new('RGBA', (self.list_size, 135), (255, 255, 255, self.color_line))
+        line_width = 0
         for i in range(len(self.mass_img)):
-            # Узнаём ширену картинки
+            # Узнаём ширину картинки)
             width = self.mass_img[i].width
             # Наносим картинку фото на картинку строки
             ran_down_text = random.randint(-2, 2)
-            stroka_img.paste(self.mass_img[i], (len_width, ran_down_text),
+            stroka_img.paste(self.mass_img[i], (line_width, ran_down_text),
                              mask=self.mass_img[i])
-            # try:
             # Если есть это не последнее слово то добавляем после него пробел
-            # a = mass_img[i + 1]
             # рандомный отступ между слов
             ran_spase = random.randint(25, 35)  # 30/len(mass_img)
             # print(ran_spase)
-            len_width += width + ran_spase  # spaser_word  # 30
+            line_width += width + ran_spase  # spaser_word  # 30
             # except:
             #     len_width += width
         self.clear_paper.paste(stroka_img, (self.line_start, self.offset), mask=stroka_img)
@@ -72,5 +75,5 @@ class Drawing(object):
     def draw(self):
         self.mass_img = []
         self.font_color = str(self.font_color).split(", ")
-        self.__drawing_line()
-        self.__paste_on_paper()
+        self._drawing_line()
+        self._paste_on_paper()
