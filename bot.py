@@ -219,11 +219,11 @@ def main():
             user_data['last_time'] = int(time.time())
             user_data['text_true'] = True
             mass_gif = [
-                os.path.join('GIF', 'grif.gif'),
-                os.path.join('GIF', 'old_print.gif'),
-                os.path.join('GIF', 'phone.gif'),
-                os.path.join('GIF', 'sister.gif'),
-                os.path.join('GIF', 'kit.gif'),
+                os.path.join(BASE_DIR, 'GIF', 'grif.gif'),
+                os.path.join(BASE_DIR, 'GIF', 'old_print.gif'),
+                os.path.join(BASE_DIR, 'GIF', 'phone.gif'),
+                os.path.join(BASE_DIR, 'GIF', 'sister.gif'),
+                os.path.join(BASE_DIR, 'GIF', 'kit.gif'),
             ]
             gif = random.choice(mass_gif)
             user_data['gif'] = bot.send_video(
@@ -309,5 +309,7 @@ def main():
 if '__main__' == __name__:
     absFilePath = os.path.abspath(__file__)
     BASE_DIR = os.path.dirname(absFilePath)
+    # В конфиге должен лежать api_key бота
+    # API_KEY=...
     load_dotenv(os.path.join(BASE_DIR, 'config.env'))
     main()
