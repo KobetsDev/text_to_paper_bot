@@ -1,6 +1,7 @@
 import split_text
 
 
+# It splits a string into lines of a given width, using a given font.
 class SplitText(object):
     def __init__(self, text: str, width_all: int, font_use, spaser_word: int) -> list[str]:
         self.text = text
@@ -10,8 +11,13 @@ class SplitText(object):
 
     def _get_word_width(self, text):
         """Получаем ширину текста"""
-        width, height = self.font_use.getsize(text)
-        return width
+        # width2, height = self.font_use.getsize(text)
+        # width = self.font_use.getlength(text)
+        # print(self.font_use.getlength(text))
+        # width1 = self.font_use.getbbox(text)[2]
+        # print('\ngetbbox', width1, '\ngetsize', width2)
+        # print(self.font_use.getsize(text), self.font_use.getmask(text).getbbox())
+        return self.font_use.getbbox(text)[2]  # int(self.font_use.getlength(text))  # -110
 
     def split(self):
         pogr = 100  # На сколько текст может вылазить на поля

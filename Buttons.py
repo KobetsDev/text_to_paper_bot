@@ -1,7 +1,7 @@
 
 from telebot import types
 
-Select_list_type = types.InlineKeyboardMarkup()  # наша клавиатура
+Select_list_type = types.InlineKeyboardMarkup()
 otv1 = types.InlineKeyboardButton(
     text="Страница в клетку", callback_data=f"Select_list_type_work_1")
 otv2 = types.InlineKeyboardButton(
@@ -39,7 +39,7 @@ Select_list_type.row(otv_font_5, otv_font_6)  # , otv_font_7)
 
 
 UserKBstart = types.ReplyKeyboardMarkup(
-    row_width=2, resize_keyboard=True)  # наша клавиатура
+    row_width=2, resize_keyboard=True)
 button0 = types.KeyboardButton(text='▶️Начать◀️')
 button1 = types.KeyboardButton(text=' ')
 button2 = types.KeyboardButton(text=' ')
@@ -48,7 +48,7 @@ UserKBstart.row(button0)
 UserKBstart.row(button1, button2, button3)
 
 KB_print = types.ReplyKeyboardMarkup(
-    row_width=2, resize_keyboard=True)  # наша клавиатура
+    row_width=2, resize_keyboard=True)
 b0 = types.KeyboardButton(text=' ')
 b1 = types.KeyboardButton(text=' ')
 b2 = types.KeyboardButton(text=' ')
@@ -58,7 +58,7 @@ KB_print.row(b1, b2)
 KB_print.row(b3)
 
 KB_print_none = types.ReplyKeyboardMarkup(
-    row_width=2, resize_keyboard=True)  # наша клавиатура
+    row_width=2, resize_keyboard=True)
 b0 = types.KeyboardButton(text=' ')
 b1 = types.KeyboardButton(text=' ')
 b2 = types.KeyboardButton(text=' ')
@@ -68,7 +68,7 @@ KB_print_none.row(b1, b2)
 KB_print_none.row(b3)
 
 UserKB = types.ReplyKeyboardMarkup(
-    row_width=2, resize_keyboard=True)  # наша клавиатура
+    row_width=2, resize_keyboard=True)
 button0 = types.KeyboardButton(text='▶️Начать◀️')
 button3 = types.KeyboardButton(text='📰О сервисе📰')
 UserKB.row(button0)

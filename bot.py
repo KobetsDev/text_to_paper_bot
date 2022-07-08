@@ -4,19 +4,16 @@ import os
 import random
 import threading
 import time
-import zipfile  # подключаем модуль
+import zipfile
 from os.path import basename
 
 import telebot
+from dotenv import load_dotenv
 from telebot import types
-from telebot.types import InputMediaPhoto  # , Message
+from telebot.types import InputMediaPhoto
 
 import Buttons
 from mainPic import CreatePhoto
-from dotenv import load_dotenv
-
-
-# Устанавливаем путь
 
 
 def main():
@@ -30,7 +27,7 @@ def main():
         return wrapper
     user = {}
     slovar_ = {}
-    default_font_color = '48, 75, 143'
+    default_font_color = [48, 75, 143]  # '48, 75, 143'
     default_list_type = 'cell'
 
     def get_user_data(self2):
@@ -51,14 +48,19 @@ def main():
                              'order': {}}
         return user[self_id]
 
+    @bot.message_handler(commands=['test'])
+    def test(message):
+        forward_m = message.message_id-1
+        print(message.document)
+        bot.forward_message(message.chat.id, message.chat.id, forward_m)  # '609439'
+        # bot.send_video(message.from_user.id, 'CgACAgIAAxkBAAEJTJJio6gxYbO2Fv1tDr8K_TIVIPUc6AACqSAAAuqDIUkFcme6CtjI9CQE')
+
     @bot.message_handler(commands=['start'])
     def send_welcome(message):
-        b = bot.send_message(message.from_user.id,
-                             f'Привет {message.from_user.first_name}, нажми ▶️Начать◀️ и я всё тебе тут покажу.',
-                             reply_markup=Buttons.UserKBstart)
-        u = message.message_id
-        # bot.delete_message(message.chat.id, u)
-        bot.delete_message(message.chat.id, u)
+        bot.send_message(message.from_user.id,
+                         f'Привет {message.from_user.first_name}, нажми ▶️Начать◀️ и я всё тебе тут покажу.',
+                         reply_markup=Buttons.UserKBstart)
+        bot.delete_message(message.chat.id, message.message_id)
 
     @bot.callback_query_handler(func=lambda call: True)
     def Select_list_type_work(call):
@@ -103,20 +105,20 @@ def main():
             # print(call.data)
             # print(user_status[1])
             if 'Select_color_font_work_1' == call.data:  # and user_status[1] >= VIP:
-                user_data["font_color"] = "65, 105, 225"
+                user_data["font_color"] = [65, 105, 225]
                 bot.answer_callback_query(callback_query_id=call.id, text='Окей, выбран светло синий.')
 
             # доступен всем
             elif 'Select_color_font_work_2' == call.data:
-                user_data["font_color"] = "48, 75, 143"
+                user_data["font_color"] = [48, 75, 143]
                 bot.answer_callback_query(callback_query_id=call.id, text='Окей, выбран синий.')
 
             elif 'Select_color_font_work_3' == call.data:  # and user_status[1] >= Premium:
-                user_data["font_color"] = "49, 88, 143"
+                user_data["font_color"] = [49, 88, 143]
                 bot.answer_callback_query(callback_query_id=call.id, text='Окей, выбран тёмно синий цвет.')
 
             elif 'Select_color_font_work_4' == call.data:  # and user_status[1] >= BOSS:
-                user_data["font_color"] = "37, 37, 37"
+                user_data["font_color"] = [37, 37, 37]
                 bot.answer_callback_query(
                     callback_query_id=call.id,
                     text='Окей, выбран чёрный цвет.')
@@ -125,26 +127,26 @@ def main():
             # print("qwe")
             bot.answer_callback_query(callback_query_id=call.id, text='Выбери шрифт!')
         # user_status[1] == Admin:
-        elif 'AdminPanel' in call.data and call.from_user.id == 420624020 or 569452912:
-            # bot.delete_message(message.chat.id, message.message_id+1)
-            if 'AdminPanel*UserEdit' == call.data:
-                mess = bot.send_message(call.from_user.id, "Ник/id этого грешника мне!")
-                bot.register_next_step_handler(mess, UserEdit)
-            elif 'AdminPanel*User' in call.data:
-                user_data = call.data.replace("AdminPanel*User*", "").split("*")
-                # print(user_data)
-                if user_data[0] == 'ChangeThePrivilege':
-                    # if len(user_data) <= 2:
-                    KB_Buy_in_message = types.InlineKeyboardMarkup()  # наша клавиатура
-                    cmd = types.InlineKeyboardButton(text="Standart",
-                                                     callback_data=f"AdminPanel*User*BonusPrivilege*{user_data[1]}*1")
-                    KB_Buy_in_message.add(cmd)
-                    for i in slovar_:
-                        # print(i)
-                        cmd1 = types.InlineKeyboardButton(text=i,
-                                                          callback_data=f"AdminPanel*User*BonusPrivilege*{user_data[1]}*{slovar_[i]['id']}")
-                        KB_Buy_in_message.add(cmd1)
-                    bot.send_message(call.from_user.id, "Какую дадим?", reply_markup=KB_Buy_in_message)
+#   # elif 'AdminPanel' in call.data and call.from_user.id == 123 or 123:
+        #     # bot.delete_message(message.chat.id, message.message_id+1)
+        #     if 'AdminPanel*UserEdit' == call.data:
+        #         mess = bot.send_message(call.from_user.id, "Ник/id этого грешника мне!")
+        #         bot.register_next_step_handler(mess, UserEdit)
+        #     elif 'AdminPanel*User' in call.data:
+        #         user_data = call.data.replace("AdminPanel*User*", "").split("*")
+        #         # print(user_data)
+        #         if user_data[0] == 'ChangeThePrivilege':
+        #             # if len(user_data) <= 2:
+        #             KB_Buy_in_message = types.InlineKeyboardMarkup()  # наша клавиатура
+        #             cmd = types.InlineKeyboardButton(text="Standart",
+        #                                              callback_data=f"AdminPanel*User*BonusPrivilege*{user_data[1]}*1")
+        #             KB_Buy_in_message.add(cmd)
+        #             for i in slovar_:
+        #                 # print(i)
+        #                 cmd1 = types.InlineKeyboardButton(text=i,
+        #                                                   callback_data=f"AdminPanel*User*BonusPrivilege*{user_data[1]}*{slovar_[i]['id']}")
+        #                 KB_Buy_in_message.add(cmd1)
+        #             bot.send_message(call.from_user.id, "Какую дадим?", reply_markup=KB_Buy_in_message)
 
     @bot.message_handler(content_types=['text'])
     def text(message):
@@ -179,7 +181,7 @@ def main():
 Сервис позволяет забыть о написании своей рукой конспектов,
 и занять более полезными вещами.
 
-О сотрудничестве писать: itsunrisetea@gmail.com
+О сотрудничестве писать: kobets.dev@gmail.com
 '''
             # Служба поддержки: [@WT_Tini] @ssinnerr
             ops = '''😧🕶👌
@@ -194,10 +196,9 @@ def main():
             bot.send_message(message.from_user.id,
                              about, parse_mode='Markdown', reply_markup=referal_KB)
         else:
+            print(message.document)
             bot.delete_message(message.chat.id, message.message_id)
-            # print(bot.get_message(message.chat.id, message.message_id-1))
-            bot.send_message(message.from_user.id,
-                             'Нажми на кнопку!', reply_markup=Buttons.UserKB)
+            bot.send_message(message.from_user.id, 'Нажми на кнопку!', reply_markup=Buttons.UserKB)
 
     def post_text(message):
         user_data = get_user_data(message.from_user)
@@ -219,11 +220,13 @@ def main():
             user_data['last_time'] = int(time.time())
             user_data['text_true'] = True
             mass_gif = [
-                os.path.join(BASE_DIR, 'GIF', 'grif.gif'),
-                os.path.join(BASE_DIR, 'GIF', 'old_print.gif'),
-                os.path.join(BASE_DIR, 'GIF', 'phone.gif'),
-                os.path.join(BASE_DIR, 'GIF', 'sister.gif'),
-                os.path.join(BASE_DIR, 'GIF', 'kit.gif'),
+                # os.path.join(BASE_DIR, 'GIF', 'grif.gif'),
+                # os.path.join(BASE_DIR, 'GIF', 'old_print.gif'),
+                # os.path.join(BASE_DIR, 'GIF', 'phone.gif'),
+                # os.path.join(BASE_DIR, 'GIF', 'sister.gif'),
+                # os.path.join(BASE_DIR, 'GIF', 'kit.gif'),
+                # os.path.join(BASE_DIR, 'GIF', 'cit.gif'),
+                os.path.join(BASE_DIR, 'GIF', 'cit.gif'),
             ]
             gif = random.choice(mass_gif)
             user_data['gif'] = bot.send_video(
@@ -272,7 +275,7 @@ def main():
                             os.remove(zname)
                         else:
                             zip_file = open(zname, 'rb')
-                            for i in range(5):
+                            for _ in range(5):
                                 try:
                                     bot.send_document(message.chat.id, zip_file)
                                     break
@@ -309,7 +312,7 @@ def main():
 if '__main__' == __name__:
     absFilePath = os.path.abspath(__file__)
     BASE_DIR = os.path.dirname(absFilePath)
-    # В конфиге должен лежать api_key бота
+    # В файле config.env должен лежать api_key бота
     # API_KEY=...
     load_dotenv(os.path.join(BASE_DIR, 'config.env'))
     main()

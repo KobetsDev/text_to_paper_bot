@@ -26,16 +26,18 @@ class Drawing(object):
                                random.randint(0, 200), self.color_word))
         draw = ImageDraw.Draw(img_slovo)
         draw.text((number, 0), slovo, fill=(
-            int(self.font_color[0]),
-            int(self.font_color[1]),
-            int(self.font_color[2])
+            self.font_color[0],
+            self.font_color[1],
+            self.font_color[2]
         ), font=self.font_use)
         return img_slovo
 
     def _drawing_line(self):
         """Рисуем слова на строке"""
         for slovo in self.stroka.split():
-            self.width, self.height = self.font_use.getsize(slovo)
+            # print(self.width, self.height)
+            new_size = self.font_use.getbbox(slovo)
+            self.width, self.height = new_size[2], new_size[3]
             self.color_word = 200 if self.COLOR_USE else 0
             # Пишем на этой картинке шрифтом
             if self.font_name == 'Salavat':
@@ -74,6 +76,5 @@ class Drawing(object):
 
     def draw(self):
         self.mass_img = []
-        self.font_color = str(self.font_color).split(", ")
         self._drawing_line()
         self._paste_on_paper()
