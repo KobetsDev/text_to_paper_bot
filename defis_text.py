@@ -1,14 +1,16 @@
+from dataclasses import dataclass
 import split_text
+from PIL import ImageFont
 
 
-# It splits a string into lines of a given width, using a given font.
-class SplitText(object):
-    def __init__(self, text: str, width_all: int, font_use, spaser_word: int) -> list[str]:
-        self.text = text
-        self.spaser_word = spaser_word
-        self.width_all = width_all
-        self.font_use = font_use
+@dataclass
+class SplitText:
+    text: str
+    font_use: ImageFont
+    spaser_word: int
+    width_all: int
 
+    # @classmethod
     def _get_word_width(self, text):
         """Получаем ширину текста"""
         # width2, height = self.font_use.getsize(text)

@@ -196,7 +196,7 @@ def main():
             bot.send_message(message.from_user.id,
                              about, parse_mode='Markdown', reply_markup=referal_KB)
         else:
-            print(message.document)
+            # print(message.document)
             bot.delete_message(message.chat.id, message.message_id)
             bot.send_message(message.from_user.id, 'Нажми на кнопку!', reply_markup=Buttons.UserKB)
 

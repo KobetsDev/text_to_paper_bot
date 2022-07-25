@@ -1,84 +1,84 @@
 # -*- coding: utf-8 -*-
 import os
 import random
+import sys
 import time
+from dataclasses import dataclass
 
-from PIL import Image, ImageDraw, ImageFont
 from dotenv import load_dotenv
+from PIL import Image, ImageFont
 
 from art_to_page import Drawing
 from defis_text import SplitText
 
-import os
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 load_dotenv(os.path.join(BASE_DIR, 'config.env'))
 
 
+@dataclass
 class OpenImage(object):
     """Открываем картинку листка"""
-
-    def __init__(self, path_save_image_folder, page_type, path_global_image_folder):
-        self.path_save_image_folder = path_save_image_folder
-        self.page_type = page_type
-        self.path_global_image_folder = path_global_image_folder
-        # self.REFLECTED_PAGE = REFLECTED_PAGE
+    path_save_image_folder: str
+    page_type: str
+    path_global_image_folder: str
 
     def _load_cell_list(self, REFLECTED_PAGE: bool):
         """Подгружаем лист в клетку"""
-        if REFLECTED_PAGE:
-            self.clear_paper = Image.open(
-                os.path.join(self.path_global_image_folder, 'cell_reflected.jpg')
-            )
-        else:
-            self.clear_paper = Image.open(
-                os.path.join(self.path_global_image_folder, 'cell.jpg')
-            )
-        self.clear_paper.load()
-        # draw = ImageDraw.Draw(self.clear_paper)
-        return self.clear_paper
+        file = 'cell_reflected.jpg' if REFLECTED_PAGE else 'cell.jpg'
+
+        clear_paper = Image.open(
+            os.path.join(self.path_global_image_folder, file)
+        )
+        clear_paper.load()
+        return clear_paper
 
     def _load_line_list(self, REFLECTED_PAGE: bool):
         """Подгружаем лист в линию"""
-        if REFLECTED_PAGE:
-            self.clear_paper = Image.open(
-                os.path.join(self.path_global_image_folder, 'line_reflected.jpg')
-            )
-        else:
-            self.clear_paper = Image.open(
-                os.path.join(self.path_global_image_folder, 'line.jpg')
-            )
-        self.clear_paper.load()
-        # draw = ImageDraw.Draw(self.clear_paper)
-        return self.clear_paper
+        file = 'line_reflected.jpg' if REFLECTED_PAGE else 'line.jpg'
+        clear_paper = Image.open(
+            os.path.join(self.path_global_image_folder, file)
+        )
+        clear_paper.load()
+        return clear_paper
 
     def open_image(self, REFLECTED_PAGE):
         if self.page_type == 'cell':
             return self._load_cell_list(REFLECTED_PAGE)
-        if self.page_type == 'line':
+        elif self.page_type == 'line':
             return self._load_line_list(REFLECTED_PAGE)
+        else:
+            raise ValueError('Переданы не существующий тип листка')
 
-    def save_image(self, user_id, str_number):
+    def save_image(self, user_id: int, str_number: str, page):
         # global clear_paper
         path = os.path.join(self.path_save_image_folder, f'{user_id}_{int(time.time())}_{str_number}.jpg')
-        self.clear_paper.save(path)
-        self.clear_paper.close()
+        page.save(path)
+        page.close()
         return path
 
 
-class Fonts(object):
-    def __init__(self, path_fonts_folder, font_name, size):
-        self.path_fonts_folder = path_fonts_folder
-        self.font_name = font_name
-        self.size = size
+@dataclass
+class Fonts:
+    path_fonts_folder: str
+    font_name: str
+    size: int
+
+    def __post_init__(self):
+        self.merkucio: str = os.path.join(self.path_fonts_folder, "Merkucio Font4You.ttf")
+        self.abram: str = os.path.join(self.path_fonts_folder, "Abram.ttf")
+        self.gregory: str = os.path.join(self.path_fonts_folder, "Gregory.ttf")
+        self.lorenco: str = os.path.join(self.path_fonts_folder, "Lorenco.ttf")
+        self.merk: str = os.path.join(self.path_fonts_folder, "Merk.ttf")
+        self.salavat: str = os.path.join(self.path_fonts_folder, "Salavat.ttf")
 
     def _font_list(self) -> str:
         fonts = {
-            "Merkucio": os.path.join(self.path_fonts_folder, "Merkucio Font4You.ttf"),
-            "Abram": os.path.join(self.path_fonts_folder, "Abram.ttf"),
-            "Gregory": os.path.join(self.path_fonts_folder, "Gregory.ttf"),
-            "Lorenco": os.path.join(self.path_fonts_folder, "Lorenco.ttf"),
-            "Merk": os.path.join(self.path_fonts_folder, "Merk.ttf"),
-            "Salavat": os.path.join(self.path_fonts_folder, "Salavat.ttf"),
+            "Merkucio": self.merkucio,
+            "Abram": self.abram,
+            "Gregory": self.gregory,
+            "Lorenco": self.lorenco,
+            "Merk": self.merk,
+            "Salavat": self.salavat,
         }
         return fonts[self.font_name]
 
@@ -88,24 +88,22 @@ class Fonts(object):
         return font_use
 
 
+@dataclass
 class CreatePhoto(OpenImage, Fonts):
-    REFLECTED_PAGE = False
-    spaser_word = int(os.environ.get('spaser_word'))
-    COLOR_USE = int(os.environ.get('COLOR_USE'))
-    list_size = int(os.environ.get('list_size'))
     # height_list = int(os.environ.get('height_list'))
-
-    def __init__(self, path_save_image_folder,
-                 path_fonts_folder, size,
-                 text, user_id, font_color, font_name, page_type, path_global_image_folder):
-        self.text = text
-        self.user_id = user_id
-        self.font_color = font_color
-        self.font_name = font_name
-        self.page_type = page_type
-        self.path_global_image_folder = path_global_image_folder
-        OpenImage.__init__(self, path_save_image_folder, page_type, path_global_image_folder)
-        Fonts.__init__(self, path_fonts_folder, font_name, size)
+    path_save_image_folder: str
+    path_fonts_folder: str
+    size: int
+    text: str
+    user_id: int
+    font_color: str
+    font_name: str
+    page_type: str
+    path_global_image_folder: str
+    REFLECTED_PAGE: bool = False
+    spaser_word: int = int(os.environ.get('spaser_word'))
+    COLOR_USE: bool = int(os.environ.get('COLOR_USE'))
+    list_size: int = int(os.environ.get('list_size'))
 
     def _config(self, page_type, font_use):
         if page_type == 'cell':
@@ -126,13 +124,15 @@ class CreatePhoto(OpenImage, Fonts):
                 list_size = 1625
         return offset, list_size
 
-    def _get_split_text(self, font_use) -> list:
+    @classmethod
+    def __get_split_text(cls, text, font_use) -> list:
         """Разбиваем текст на строки"""
         text_split = []
-        for i in self.text.split('\n\n'):
-            ST = SplitText(text=i, width_all=self.list_size,
+        for i in text.split('\n\n'):
+            ST = SplitText(text=i,
                            font_use=font_use,
-                           spaser_word=self.spaser_word)
+                           spaser_word=cls.spaser_word,
+                           width_all=cls.list_size)
             text_split.append(ST.split())
         return text_split
 
@@ -148,7 +148,7 @@ class CreatePhoto(OpenImage, Fonts):
         paths = []
         line_number = 0
         # разбиваем на абзатцы
-        text_split = self._get_split_text(font_use)
+        text_split = self.__get_split_text(text, font_use)
         # text_split.append(
         #     split_a_text(text=i, width_all=self.list_size,
         #                  font_use=font_use,
@@ -160,11 +160,11 @@ class CreatePhoto(OpenImage, Fonts):
             global_line_start = 250 if self.REFLECTED_PAGE else 75
         for abzats in text_split:
             for stroka in abzats:
-                print(line_number)
+                # print(line_number)
                 # Создаём новую страницу
                 if (line_number == 20 and self.page_type == 'cell'):
                     offset = 38
-                    paths.append(self.save_image(self.user_id, str_number))
+                    paths.append(self.save_image(self.user_id, str_number, page))
                     str_number += 1
                     #  Смена страниц
                     self.REFLECTED_PAGE = False if self.REFLECTED_PAGE else True
@@ -174,7 +174,7 @@ class CreatePhoto(OpenImage, Fonts):
 
                 if (line_number == 25 and self.page_type == 'line'):
                     offset = 94
-                    paths.append(self.save_image(self.user_id, str_number))
+                    paths.append(self.save_image(self.user_id, str_number, page))
                     str_number += 1
                     #  Смена страниц
                     self.REFLECTED_PAGE = False if self.REFLECTED_PAGE else True
@@ -192,7 +192,7 @@ class CreatePhoto(OpenImage, Fonts):
                 #             random.randint(0, int((self.list_size-width)/5))
                 D = Drawing(
                     COLOR_USE=self.COLOR_USE,
-                    stroka=stroka,
+                    text=stroka,
                     font_use=font_use,
                     list_size=self.list_size,
                     clear_paper=page,
@@ -217,7 +217,7 @@ class CreatePhoto(OpenImage, Fonts):
                 line_number += 1
 
         paths.append(
-            self.save_image(self.user_id, str_number)
+            self.save_image(self.user_id, str_number, page)
         )
         return paths
 
@@ -237,7 +237,8 @@ class CreatePhoto(OpenImage, Fonts):
 
 #     text=text,
 #     user_id=123,
-#     font_color='49, 88, 143',
+#     # font_color='49, 88, 143',
+#     font_color=[48, 75, 143],
 #     font_name='Merkucio',
-#     page_type='cell')
+#     page_type='line')
 # print(CP.create())
